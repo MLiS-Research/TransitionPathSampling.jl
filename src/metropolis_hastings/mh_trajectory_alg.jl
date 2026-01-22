@@ -1,8 +1,8 @@
 using Random
 using Base
 
-Base.@kwdef mutable struct GaussianMHTrajectoryParameters{T<:Real, K<:Union{Nothing, Real}, X<:Union{Nothing, Real}, Q<:Union{Nothing,Int}}
-    s::T
+Base.@kwdef mutable struct GaussianMHTrajectoryParameters{T<:AbstractFloat, K<:Union{Nothing, Real}, X<:Union{Nothing, Real}, Q<:Union{Nothing,Int}}
+    s::Float64
     σ::T
     fraction_to_include::K
     chance_shoot::X
@@ -36,8 +36,7 @@ function TransitionPathSampling.generate_cache(alg::GaussianTrajectoryAlgorithm,
     use_mask = (num_parameters != num_params_to_change)
     exclude_parameter_mask = BitArray(i > num_params_to_change for i in 1:num_parameters)
     observable = TransitionPathSampling.get_observable(problem)
-    observations = TransitionPathSampling.observe(observable, initial_state)
-    @assert typeof(observations)<:AbstractArray "The observation function does not return a vector of observations for each state in the trajectory."
+    observations = [TransitionPathSampling.observe(observable, state) for state in initial_state]
     total_observation = sum(observations)
     indices_changed = 1:num_models
 
@@ -173,7 +172,7 @@ function apply!(states::Q, cache::GaussianMHTrajectoryCache{T, Q}) where {T, Q}
 end
 
 
-get_last_observation!(cache::GaussianMHTrajectoryCache) = cache.total_observation
+get_last_observation(cache::GaussianMHTrajectoryCache) = cache.total_observation
 function acceptance!(cache::GaussianMHTrajectoryCache{T, Q}, states::Q, alg::GaussianTrajectoryAlgorithm) where {T, Q}
     parameters = alg.parameters
     TransitionPathSampling.observe!(cache.cached_observation, cache.observable, cache.state_cache, cache.indices_changed)

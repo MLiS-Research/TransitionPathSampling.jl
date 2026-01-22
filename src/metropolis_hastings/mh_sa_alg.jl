@@ -1,7 +1,7 @@
 using Random
 
-Base.@kwdef mutable struct GaussianSAParameters{T<:Real, K<:Union{Nothing, Real}}
-    s::T
+Base.@kwdef mutable struct GaussianSAParameters{T<:AbstractFloat, K<:Union{Nothing, Real}}
+    s::Float64
     σ::T
     fraction_to_include::K
 end
@@ -63,7 +63,7 @@ end
 function apply!(state::Q, cache::GaussianSACache{Q}) where {Q}
     state .= cache.state
 end
-get_last_observation!(cache::GaussianSACache) = cache.last_observation
+get_last_observation(cache::GaussianSACache) = cache.last_observation
 
 function acceptance!(cache::GaussianSACache{Q}, state::Q, alg::GaussianSAAlgorithm) where {Q}
     parameters = alg.parameters
