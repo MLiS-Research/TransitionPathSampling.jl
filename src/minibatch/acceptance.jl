@@ -170,8 +170,8 @@ function finalise!(proposed_change::TrajectoryProposedChange, quants::MinibatchQ
     end
 end
 
-struct MinibatchAcceptanceInfo
-    quantities::MinibatchQuantities
+struct MinibatchAcceptanceInfo{MQ<:MinibatchQuantities}
+    quantities::MQ
     has_full_batch::Bool
     has_been_cutoff::Bool
     has_default_acceptance::Bool
